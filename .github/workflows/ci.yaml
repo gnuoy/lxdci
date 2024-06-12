@@ -1,0 +1,20 @@
+name: "Install latest LXD"
+on: push
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup LXD
+      uses: canonical/setup-lxd@87f9a0dbf8855632e12fad0a45795338e4e97d12
+      with:
+        channel: 5.0/stable
+
+    - name: Launch container
+      run: |
+        lxc launch ubuntu:24.04 maas
+        lxc exec maas -- bash -c 'while [ "$(systemctl is-system-running 2>/dev/null)" != "running" ] && [ "$(systemctl is-system-running 2>/dev/null)" != "degraded" ]; do :; done'
+        lxc ls
